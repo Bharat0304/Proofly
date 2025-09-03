@@ -2,6 +2,7 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 import  { Signin } from "./Components/Signin";
+import { VideoRecord } from "./Components/VideoRecorder";
 import './index.css'; 
 import HomePage from "./Components/Home";
 import { Signup } from "./Components/Signup";
@@ -15,7 +16,7 @@ function App(){
       <Route path="/" element={<HomePage/>}/>
       <Route path="signup" element={<Signup/>}/>
       <Route path="/dashboard" element={<Dashboard/>}/>
-    
+      <Route path="videorecord" element={<VideoRecord/>}/>
     </Routes>
   </Router>
   
