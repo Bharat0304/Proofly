@@ -7,6 +7,7 @@ export function VideoRecord() {
   const [capturing, setCapturing] = useState(false);
   const [recordedChunks, setRecordedChunks] = useState<Blob[]>([]);
   const [videoURL, setVideoURL] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   const startCapture = () => {
     setCapturing(true);
@@ -31,12 +32,38 @@ export function VideoRecord() {
     }
   };
 
+  const uploadToS3 = async (blob: Blob) => {
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("video", blob, "testimonial.webm");
+
+      const res = await fetch("http://localhost:3000/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        alert("✅ Uploaded successfully!");
+        console.log("Uploaded video URL:", data.url);
+        setVideoURL(data.url); // show S3 video instead of local blob
+      } else {
+        alert("❌ Upload failed: " + data.message);
+      }
+    } catch (err) {
+      console.error("Upload error:", err);
+      alert("❌ Upload error, check console.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const saveVideo = () => {
     if (recordedChunks.length) {
       const blob = new Blob(recordedChunks, { type: "video/webm" });
-      const url = URL.createObjectURL(blob);
-      setVideoURL(url);
       setRecordedChunks([]);
+      uploadToS3(blob);
     }
   };
 
@@ -80,9 +107,10 @@ export function VideoRecord() {
         {recordedChunks.length > 0 && (
           <button
             onClick={saveVideo}
-            className="px-4 py-2 bg-blue-500 rounded-lg hover:bg-blue-600"
+            disabled={uploading}
+            className="px-4 py-2 bg-blue-500 rounded-lg hover:bg-blue-600 disabled:bg-gray-500"
           >
-            Save
+            {uploading ? "Uploading..." : "Save & Upload"}
           </button>
         )}
       </div>
