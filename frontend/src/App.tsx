@@ -7,6 +7,8 @@ import './index.css';
 import HomePage from "./Components/Home";
 import { Signup } from "./Components/Signup";
 import { Dashboard } from "./Components/Dashboard";
+// import GlassTestimonial, { AccentTestimonial, MinimalTestimonial, TestimonialCard1 } from "./Components/Design";
+import TestimonialShowcase from "./Components/Design";
 
 function App(){
   return( <div className="">
@@ -17,6 +19,9 @@ function App(){
       <Route path="signup" element={<Signup/>}/>
       <Route path="/dashboard" element={<Dashboard/>}/>
       <Route path="videorecord" element={<VideoRecord/>}/>
+      <Route path="/proof" element={<TestimonialShowcase/>
+    
+      }/>
     </Routes>
   </Router>
   
