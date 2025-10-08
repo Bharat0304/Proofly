@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export function Dashboard() {
   return (
@@ -60,10 +61,13 @@ export function Dashboard() {
         />
       </div>
 
-      {/* Spaces List */}
+      {/* Spaces List */}<div>
+        
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-gray-800 p-6 rounded-xl shadow hover:shadow-lg transition">
-          <h3 className="font-semibold text-lg">bharat</h3>
+         <Link to="/proof">
+          <h3 className="font-semibold text-lg" >bharat</h3>
+          </Link>
           <p className="text-gray-400 mt-2">Videos: 0</p>
           <p className="text-gray-400">Text: 1</p>
           <div className="flex justify-end mt-4">
@@ -73,6 +77,7 @@ export function Dashboard() {
           </div>
         </div>
         {/* Add more space cards here */}
+      </div>
       </div>
     </div>
   );
