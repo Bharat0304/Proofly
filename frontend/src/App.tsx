@@ -8,6 +8,8 @@ import { Codepreview } from "./Components/CodePreview";
 import { CodePrevBold } from "./Components/CodePrevBold";
 import { CodePrevGlass } from "./Components/CodePrevGlass";
 import { CodePrevModern } from "./Components/CodePrevModern";
+import VideoRecord from "./Components/VideoRecorder";
+import { RequireAuth } from "./Components/RequireAuth";
 function Home(){
   return (
     <BrowserRouter>
@@ -15,14 +17,23 @@ function Home(){
       <Route path="/" element={<HomePage/>} />
       <Route path="/signup" element={<Signup/>}></Route>
       <Route path="/signin" element={<Signin/>}></Route>
-      <Route path="/dashboard" element={<Dashboard/>}></Route>
+      <Route
+        path="/dashboard"
+        element={
+          <RequireAuth>
+            <Dashboard/>
+          </RequireAuth>
+        }
+      ></Route>
      <Route path='/proof' element={<TestimonialCard/>}></Route>
       <Route path="snippet" element={<Codepreview/>}></Route>
       <Route path="snippet2" element={<CodePrevBold/>}></Route>
       <Route path="snippet3" element={<CodePrevGlass/>}></Route>
     
       <Route path="snippet4" element={<CodePrevModern/>}></Route>
+      <Route path="/video" element={<VideoRecord/>}></Route>
       </Routes>
+      
 
 
     </BrowserRouter>

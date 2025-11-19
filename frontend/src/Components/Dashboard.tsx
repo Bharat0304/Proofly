@@ -1,7 +1,68 @@
 import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+
+interface CreatedSpace {
+  id: string;
+  name: string;
+  shareUrl: string;
+}
 
 export function Dashboard() {
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [spaceName, setSpaceName] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [description, setDescription] = useState("");
+  const [creating, setCreating] = useState(false);
+  const [createdSpaces, setCreatedSpaces] = useState<CreatedSpace[]>([]);
+
+  const handleCreateSpace = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("You must be signed in to create a space.");
+      return;
+    }
+
+    setCreating(true);
+    try {
+      const res = await fetch("http://localhost:3000/spaces", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: spaceName,
+          companyName,
+          description,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data?.msg || "Failed to create space");
+        return;
+      }
+
+      const newSpace: CreatedSpace = {
+        id: data.space._id,
+        name: data.space.name,
+        shareUrl: data.shareUrl,
+      };
+
+      setCreatedSpaces((prev) => [newSpace, ...prev]);
+      setSpaceName("");
+      setCompanyName("");
+      setDescription("");
+      setShowCreateForm(false);
+    } catch (e) {
+      console.error("Create space error", e);
+      alert("Error creating space. Check console.");
+    } finally {
+      setCreating(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 p-6">
       {/* Header */}
@@ -47,10 +108,65 @@ export function Dashboard() {
       {/* Spaces Section */}
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-semibold">Spaces</h2>
-        <button className="px-4 py-2 bg-indigo-500 rounded-lg hover:bg-indigo-600 transition">
+        <button
+          className="px-4 py-2 bg-indigo-500 rounded-lg hover:bg-indigo-600 transition"
+          onClick={() => setShowCreateForm(true)}
+        >
           + Create a new space
         </button>
       </div>
+
+      {showCreateForm && (
+        <div className="mb-6 bg-gray-800 p-4 rounded-xl">
+          <h3 className="text-lg font-semibold mb-3">New Space</h3>
+          <div className="space-y-3">
+            <div>
+              <label className="block text-sm mb-1">Space name</label>
+              <input
+                className="w-full px-3 py-2 rounded-lg bg-gray-900 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                value={spaceName}
+                onChange={(e) => setSpaceName(e.target.value)}
+                placeholder="e.g. Customer Testimonials"
+              />
+            </div>
+            <div>
+              <label className="block text-sm mb-1">Company name</label>
+              <input
+                className="w-full px-3 py-2 rounded-lg bg-gray-900 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
+                placeholder="Your company name"
+              />
+            </div>
+            <div>
+              <label className="block text-sm mb-1">Description / Instructions</label>
+              <textarea
+                className="w-full px-3 py-2 rounded-lg bg-gray-900 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Tell people what kind of testimonial you want."
+              />
+            </div>
+            <div className="flex gap-3 justify-end">
+              <button
+                className="px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600"
+                type="button"
+                onClick={() => setShowCreateForm(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-2 rounded-lg bg-indigo-500 hover:bg-indigo-600 disabled:bg-gray-600"
+                type="button"
+                disabled={creating}
+                onClick={handleCreateSpace}
+              >
+                {creating ? "Creating..." : "Create"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Search Bar */}
       <div className="mb-6">
@@ -61,23 +177,24 @@ export function Dashboard() {
         />
       </div>
 
-      {/* Spaces List */}<div>
-        
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-gray-800 p-6 rounded-xl shadow hover:shadow-lg transition">
-         <Link to="/proof">
-          <h3 className="font-semibold text-lg" >bharat</h3>
-          </Link>
-          <p className="text-gray-400 mt-2">Videos: 0</p>
-          <p className="text-gray-400">Text: 1</p>
-          <div className="flex justify-end mt-4">
-            <button className="px-3 py-1 text-sm bg-gray-700 rounded-lg hover:bg-gray-600 transition">
-              ...
-            </button>
-          </div>
+      {/* Spaces List */}
+      <div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {createdSpaces.map((space) => (
+            <div key={space.id} className="bg-gray-800 p-6 rounded-xl shadow hover:shadow-lg transition">
+              <h3 className="font-semibold text-lg">{space.name}</h3>
+              <p className="text-gray-400 mt-2 break-all text-sm">Share link:</p>
+              <a
+                href={space.shareUrl}
+                className="text-indigo-400 break-all text-sm hover:underline"
+                target="_blank"
+                rel="noreferrer"
+              >
+                {space.shareUrl}
+              </a>
+            </div>
+          ))}
         </div>
-        {/* Add more space cards here */}
-      </div>
       </div>
     </div>
   );

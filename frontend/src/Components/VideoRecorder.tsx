@@ -35,22 +35,50 @@ export function VideoRecord() {
   const uploadToS3 = async (blob: Blob) => {
     setUploading(true);
     try {
-      const formData = new FormData();
-      formData.append("video", blob, "testimonial.webm");
-
+      // 1. Ask backend to create a Mux direct upload URL
       const res = await fetch("http://localhost:3000/api/upload", {
         method: "POST",
-        body: formData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({}),
       });
 
       const data = await res.json();
-      if (res.ok) {
-        alert("✅ Uploaded successfully!");
-        console.log("Uploaded video URL:", data.url);
-        setVideoURL(data.url); // show S3 video instead of local blob
-      } else {
-        alert("❌ Upload failed: " + data.message);
+
+      if (!res.ok) {
+        alert("❌ Failed to create upload URL: " + (data?.error || data?.message || "Unknown error"));
+        return;
       }
+
+      const { uploadUrl, uploadId } = data;
+
+      if (!uploadUrl) {
+        alert("❌ Backend did not return a valid uploadUrl");
+        return;
+      }
+
+      // 2. Upload the recorded blob directly to Mux using the signed upload URL
+      const uploadRes = await fetch(uploadUrl, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "video/webm",
+        },
+        body: blob,
+      });
+
+      if (!uploadRes.ok) {
+        console.error("Mux upload failed", uploadRes.status, uploadRes.statusText);
+        alert("❌ Upload to Mux failed, check console.");
+        return;
+      }
+
+      alert("✅ Uploaded to Mux successfully!");
+      console.log("Mux uploadId:", uploadId);
+
+      // For now, show the locally recorded video while Mux processes the asset
+      const localPreviewUrl = URL.createObjectURL(blob);
+      setVideoURL(localPreviewUrl);
     } catch (err) {
       console.error("Upload error:", err);
       alert("❌ Upload error, check console.");
