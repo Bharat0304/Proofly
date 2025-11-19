@@ -1,10 +1,11 @@
-import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-interface CreatedSpace {
+interface SpaceItem {
   id: string;
   name: string;
   shareUrl: string;
+  shareId: string;
+  testimonialsCount: number;
 }
 
 export function Dashboard() {
@@ -13,7 +14,41 @@ export function Dashboard() {
   const [companyName, setCompanyName] = useState("");
   const [description, setDescription] = useState("");
   const [creating, setCreating] = useState(false);
-  const [createdSpaces, setCreatedSpaces] = useState<CreatedSpace[]>([]);
+  const [spaces, setSpaces] = useState<SpaceItem[]>([]);
+  const [embedForId, setEmbedForId] = useState<string | null>(null);
+  const [variantBySpace, setVariantBySpace] = useState<Record<string, "minimal" | "bold">>({});
+
+  useEffect(() => {
+    const loadSpaces = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      try {
+        const res = await fetch("http://localhost:3000/spaces", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await res.json();
+        if (!res.ok) return;
+
+        const mapped: SpaceItem[] = (data.spaces || []).map((s: any) => ({
+          id: s._id,
+          name: s.name,
+          shareUrl: `http://localhost:5173/space/${s.shareId}`,
+          shareId: s.shareId,
+          testimonialsCount: (s.testimonials || []).length,
+        }));
+
+        setSpaces(mapped);
+      } catch (e) {
+        console.error("Error loading spaces", e);
+      }
+    };
+
+    loadSpaces();
+  }, []);
 
   const handleCreateSpace = async () => {
     const token = localStorage.getItem("token");
@@ -44,13 +79,15 @@ export function Dashboard() {
         return;
       }
 
-      const newSpace: CreatedSpace = {
+      const newSpace: SpaceItem = {
         id: data.space._id,
         name: data.space.name,
         shareUrl: data.shareUrl,
+        shareId: data.space.shareId,
+        testimonialsCount: 0,
       };
 
-      setCreatedSpaces((prev) => [newSpace, ...prev]);
+      setSpaces((prev) => [newSpace, ...prev]);
       setSpaceName("");
       setCompanyName("");
       setDescription("");
@@ -180,20 +217,86 @@ export function Dashboard() {
       {/* Spaces List */}
       <div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {createdSpaces.map((space) => (
-            <div key={space.id} className="bg-gray-800 p-6 rounded-xl shadow hover:shadow-lg transition">
-              <h3 className="font-semibold text-lg">{space.name}</h3>
-              <p className="text-gray-400 mt-2 break-all text-sm">Share link:</p>
-              <a
-                href={space.shareUrl}
-                className="text-indigo-400 break-all text-sm hover:underline"
-                target="_blank"
-                rel="noreferrer"
-              >
-                {space.shareUrl}
-              </a>
-            </div>
-          ))}
+          {spaces.map((space) => {
+            const variant = variantBySpace[space.id] ?? "minimal";
+            const iframeSnippet = `<iframe src="${space.shareUrl}" width="640" height="360" frameborder="0"></iframe>`;
+            const reactSnippet = `import { ProoflyEmbed } from "./ProoflyEmbed";
+
+export function TestimonialSection() {
+  return (
+    <ProoflyEmbed
+      shareId="${space.shareId}"
+      backendUrl="http://localhost:3000"
+      variant="${variant}"
+    />
+  );
+}`;
+            return (
+              <div key={space.id} className="bg-gray-800 p-6 rounded-xl shadow hover:shadow-lg transition space-y-2">
+                <h3 className="font-semibold text-lg">{space.name}</h3>
+                <p className="text-gray-400 text-sm">
+                  Testimonials: {space.testimonialsCount}
+                </p>
+                <p className="text-gray-400 mt-1 break-all text-sm">Share link:</p>
+                <a
+                  href={space.shareUrl}
+                  className="text-indigo-400 break-all text-sm hover:underline"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {space.shareUrl}
+                </a>
+                {space.testimonialsCount > 0 && (
+                  <div className="mt-2">
+                    <button
+                      className="px-3 py-1 text-xs bg-gray-700 rounded-lg hover:bg-gray-600"
+                      type="button"
+                      onClick={() => setEmbedForId(embedForId === space.id ? null : space.id)}
+                    >
+                      {embedForId === space.id ? "Hide embed code" : "Show embed code"}
+                    </button>
+                    {embedForId === space.id && (
+                      <div className="mt-2 space-y-2">
+                        <div className="flex gap-2 items-center text-xs text-gray-300">
+                          <span>Design:</span>
+                          <button
+                            type="button"
+                            className={`px-2 py-1 rounded border ${
+                              variant === "minimal" ? "border-indigo-400 bg-indigo-500/20" : "border-gray-600"
+                            }`}
+                            onClick={() =>
+                              setVariantBySpace((prev) => ({ ...prev, [space.id]: "minimal" }))
+                            }
+                          >
+                            Minimal
+                          </button>
+                          <button
+                            type="button"
+                            className={`px-2 py-1 rounded border ${
+                              variant === "bold" ? "border-indigo-400 bg-indigo-500/20" : "border-gray-600"
+                            }`}
+                            onClick={() =>
+                              setVariantBySpace((prev) => ({ ...prev, [space.id]: "bold" }))
+                            }
+                          >
+                            Bold
+                          </button>
+                        </div>
+                        <p className="text-gray-400 text-xs">Iframe snippet:</p>
+                        <pre className="text-xs bg-black/40 p-2 rounded border border-gray-700 overflow-x-auto">
+{iframeSnippet}
+                        </pre>
+                        <p className="text-gray-400 text-xs mt-2">React (TypeScript) snippet:</p>
+                        <pre className="text-xs bg-black/40 p-2 rounded border border-gray-700 overflow-x-auto">
+{reactSnippet}
+                        </pre>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

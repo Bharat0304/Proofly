@@ -1,7 +1,11 @@
 import React, { useRef, useState } from "react";
 import Webcam from "react-webcam";
 
-export function VideoRecord() {
+interface VideoRecordProps {
+  onUploadComplete?: () => void;
+}
+
+export function VideoRecord({ onUploadComplete }: VideoRecordProps) {
   const webcamRef = useRef<Webcam>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const [capturing, setCapturing] = useState(false);
@@ -79,6 +83,10 @@ export function VideoRecord() {
       // For now, show the locally recorded video while Mux processes the asset
       const localPreviewUrl = URL.createObjectURL(blob);
       setVideoURL(localPreviewUrl);
+
+      if (onUploadComplete) {
+        onUploadComplete();
+      }
     } catch (err) {
       console.error("Upload error:", err);
       alert("❌ Upload error, check console.");

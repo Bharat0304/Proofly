@@ -10,6 +10,8 @@ import { CodePrevGlass } from "./Components/CodePrevGlass";
 import { CodePrevModern } from "./Components/CodePrevModern";
 import VideoRecord from "./Components/VideoRecorder";
 import { RequireAuth } from "./Components/RequireAuth";
+import PublicSpacePage from "./Components/PublicSpacePage";
+import { TestimonialSection } from "./Components/testing";
 function Home(){
   return (
     <BrowserRouter>
@@ -31,7 +33,9 @@ function Home(){
       <Route path="snippet3" element={<CodePrevGlass/>}></Route>
     
       <Route path="snippet4" element={<CodePrevModern/>}></Route>
+      <Route path="/space/:shareId" element={<PublicSpacePage/>}></Route>
       <Route path="/video" element={<VideoRecord/>}></Route>
+     <Route path="/test" element={<TestimonialSection/>}></Route><Route/>
       </Routes>
       
 
