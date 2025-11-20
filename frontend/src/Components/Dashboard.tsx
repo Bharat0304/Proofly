@@ -63,7 +63,7 @@ export function Dashboard() {
 
     setCreating(true);
     try {
-      const res = await fetch("http://localhost:3000/spaces", {
+      const res = await fetch(`${BACKEND_URL}/spaces`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
