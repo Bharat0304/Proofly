@@ -1,11 +1,6 @@
-import { configureStore } from '@reduxjs/toolkit'
-import counterReducer from './CounterSlice'
+// Redux is not used in this project currently.
+// Provide minimal placeholder types so imports (if any) still compile.
 
-export const store = configureStore({
-  reducer: {
-    counter: counterReducer,
-  },
-})
-
-export type RootState = ReturnType<typeof store.getState>
-export type AppDispatch = typeof store.dispatch
+export const store = {} as unknown;
+export type RootState = unknown;
+export type AppDispatch = unknown;

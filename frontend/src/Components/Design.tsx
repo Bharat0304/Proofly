@@ -1,3 +1,4 @@
+import type React from 'react';
 import { useState } from 'react';
 import { Star, Quote, Heart, Twitter, Linkedin } from 'lucide-react';
 
@@ -23,10 +24,15 @@ const TestimonialShowcase = () => {
     { id: 6, name: "Card Stack" }
   ];
 
-  const StarRating = ({ rating }) => (
+  const StarRating: React.FC<{ rating: number }> = ({ rating }) => (
     <div className="flex gap-1">
       {[...Array(5)].map((_, i) => (
-        <Star key={i} className={`w-4 h-4 ${i < rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+        <Star
+          key={i}
+          className={`w-4 h-4 ${
+            i < rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
+          }`}
+        />
       ))}
     </div>
   );

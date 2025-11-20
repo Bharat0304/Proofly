@@ -25,21 +25,18 @@ export interface TextTestimonial extends BaseTestimonial {
 
 // // export type Testimonial = VideoTestimonial | TextTestimonial;
 
-// Shared Components
-export const StarRating: React.FC<{ rating: number }> = ({ rating }) => {
-  return (
-    <div className="flex space-x-1">
-      {[...Array(5)].map((_, i) => (
-        <Star
-          key={i}
-          className={`w-4 h-4 ${
-            i < rating ? 'text-yellow-400 fill-current' : 'text-gray-300'
-          }`}
-        />
-      ))}
-    </div>
-  );
-};
+const StarRating: React.FC<{ rating: number }> = ({ rating }) => (
+  <div className="flex gap-1">
+    {[...Array(5)].map((_, i) => (
+      <Star
+        key={i}
+        className={`w-4 h-4 ${
+          i < rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
+        }`}
+      />
+    ))}
+  </div>
+);
 
 // Card Component 1: Minimal Elegant Card
 export const MinimalElegantCard: React.FC<{ testimonial: TextTestimonial }> = ({ testimonial }) => {
