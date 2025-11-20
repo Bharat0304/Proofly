@@ -27,7 +27,10 @@ export function Dashboard() {
   // Check authentication on component mount
   useEffect(() => {
     const token = localStorage.getItem("token");
+    console.log('Dashboard mounted. Token from localStorage:', token ? 'Token exists' : 'No token found');
+    
     if (!token) {
+      console.log('No token found, redirecting to signin');
       navigate('/signin');
       return;
     }
@@ -39,16 +42,23 @@ export function Dashboard() {
       if (!token) return;
 
       try {
+        console.log('Fetching spaces from:', `${BACKEND_URL}/spaces`);
+        console.log('Using token:', token);
+        
         const res = await fetch(`${BACKEND_URL}/spaces`, {
+          method: 'GET',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`,
           },
           credentials: 'include' // Important for cookies if using httpOnly
         });
+        
+        console.log('Spaces API response status:', res.status);
 
         if (res.status === 401) {
-          // Token is invalid or expired
+          const errorText = await res.text();
+          console.error('401 Unauthorized. Response:', errorText);
           localStorage.removeItem('token');
           navigate('/signin');
           return;

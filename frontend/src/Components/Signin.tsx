@@ -14,30 +14,46 @@ export function Signin() {
     e.preventDefault();
     setLoading(true);
     setError("");
+    console.log('Signin attempt with username:', username);
 
     try {
+      console.log('Sending signin request to:', `${BACKEND_URL}/signin`);
       const res = await fetch(`${BACKEND_URL}/signin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: 'include', // Important for httpOnly cookies
+        credentials: 'include',
         body: JSON.stringify({
           username,
           password,
         }),
       });
 
-      const data = await res.json();
+      let data;
+      try {
+        data = await res.json();
+        console.log('Signin response status:', res.status, 'Data:', data);
+      } catch (e) {
+        console.error('Failed to parse signin response:', e);
+        setError("Invalid response from server");
+        return;
+      }
       
       if (!res.ok) {
-        setError(data.msg || "Failed to sign in. Please check your credentials.");
+        const errorMsg = data.msg || "Failed to sign in. Please check your credentials.";
+        console.error('Signin failed:', errorMsg);
+        setError(errorMsg);
         return;
       }
 
       // Store the token in localStorage
       if (data.token) {
+        console.log('Received token, storing in localStorage');
         localStorage.setItem("token", data.token);
+        console.log('Token stored, navigating to /dashboard');
+      } else {
+        console.warn('No token received in signin response');
       }
       
       // Redirect to dashboard on successful signin
