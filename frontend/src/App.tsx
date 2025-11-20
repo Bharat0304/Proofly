@@ -34,7 +34,7 @@ function Home(){
     
       <Route path="snippet4" element={<CodePrevModern/>}></Route>
       <Route path="/space/:shareId" element={<PublicSpacePage/>}></Route>
-      <Route path="/video" element={<VideoRecord/>}></Route>
+      <Route path="/video" element={<VideoRecord shareId="" />} ></Route>
      <Route path="/test" element={<TestimonialSection/>}></Route><Route/>
       </Routes>
       
