@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 
@@ -21,6 +22,16 @@ export function Dashboard() {
   const [variantBySpace, setVariantBySpace] = useState<
     Record<string, "minimal" | "bold" | "glass" | "modern" | "grid">
   >({});
+  const navigate = useNavigate();
+
+  // Check authentication on component mount
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate('/signin');
+      return;
+    }
+  }, [navigate]);
 
   useEffect(() => {
     const loadSpaces = async () => {
@@ -30,12 +41,25 @@ export function Dashboard() {
       try {
         const res = await fetch(`${BACKEND_URL}/spaces`, {
           headers: {
-            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
           },
+          credentials: 'include' // Important for cookies if using httpOnly
         });
 
+        if (res.status === 401) {
+          // Token is invalid or expired
+          localStorage.removeItem('token');
+          navigate('/signin');
+          return;
+        }
+
+        if (!res.ok) {
+          console.error('Failed to fetch spaces:', await res.text());
+          return;
+        }
+
         const data = await res.json();
-        if (!res.ok) return;
 
         const mapped: SpaceItem[] = (data.spaces || []).map((s: any) => ({
           id: s._id,
@@ -78,8 +102,15 @@ export function Dashboard() {
 
       const data = await res.json();
 
+      if (res.status === 401) {
+        localStorage.removeItem('token');
+        navigate('/signin');
+        return;
+      }
+
       if (!res.ok) {
-        alert(data?.msg || "Failed to create space");
+        const errorData = await res.json().catch(() => ({}));
+        alert(errorData?.msg || "Failed to create space");
         return;
       }
 

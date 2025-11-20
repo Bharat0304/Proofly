@@ -7,11 +7,13 @@ export function Signin() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError("");
 
     try {
       const res = await fetch(`${BACKEND_URL}/signin`, {
@@ -19,6 +21,7 @@ export function Signin() {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: 'include', // Important for httpOnly cookies
         body: JSON.stringify({
           username,
           password,
@@ -26,16 +29,18 @@ export function Signin() {
       });
 
       const data = await res.json();
-
+      
       if (!res.ok) {
-        alert(data?.msg || "Signin failed");
+        setError(data.msg || "Failed to sign in. Please check your credentials.");
         return;
       }
 
+      // Store the token in localStorage
       if (data.token) {
         localStorage.setItem("token", data.token);
       }
-
+      
+      // Redirect to dashboard on successful signin
       alert("Signin successful");
       navigate("/dashboard");
     } catch (err) {
