@@ -18,6 +18,9 @@ export function PublicSpacePage() {
   const [space, setSpace] = useState<SpaceResponse["space"] | null>(null);
   const [name, setName] = useState("");
   const [role, setRole] = useState("");
+  const [company, setCompany] = useState("");
+  const [photoUrl, setPhotoUrl] = useState("");
+  const [text, setText] = useState("");
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
@@ -80,13 +83,20 @@ export function PublicSpacePage() {
           <TestimonialInfo
             name={name}
             role={role}
+            company={company}
+            photoUrl={photoUrl}
+            text={text}
             onNameChange={setName}
             onRoleChange={setRole}
+            onCompanyChange={setCompany}
+            onPhotoUrlChange={setPhotoUrl}
+            onTextChange={setText}
           />
         </section>
 
         <section>
           <VideoRecord
+            shareId={shareId || ""}
             onUploadComplete={async () => {
               if (!shareId) return;
 
@@ -96,7 +106,7 @@ export function PublicSpacePage() {
                   headers: {
                     "Content-Type": "application/json",
                   },
-                  body: JSON.stringify({ name, role }),
+                  body: JSON.stringify({ name, role, company, photoUrl, text }),
                 });
 
                 if (!res.ok) {

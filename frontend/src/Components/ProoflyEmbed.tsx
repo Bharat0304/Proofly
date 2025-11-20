@@ -1,21 +1,33 @@
 import React, { useEffect, useState } from "react";
-import { Star, Quote, MessageSquare } from "lucide-react";
+import {
+  MinimalElegantCard,
+  BoldGradientCard,
+  GlassMorphismVideoCard,
+  ModernDarkVideoCard,
+} from "./TestimonialCard";
+import type { TextTestimonial, VideoTestimonial } from "./TestimonialCard";
 
 // Shape returned by your backend at GET /space/:shareId
+type SpaceTestimonial = {
+  name: string;
+  role: string;
+  company?: string;
+  photoUrl?: string;
+  text?: string;
+  muxPlaybackId?: string;
+  created: string;
+};
+
 interface SpaceResponse {
   space: {
     name: string;
     companyName: string;
     description: string;
-    testimonials?: {
-      name: string;
-      role: string;
-      created: string;
-    }[];
+    testimonials?: SpaceTestimonial[];
   };
 }
 
-type ProoflyVariant = "minimal" | "bold";
+type ProoflyVariant = "minimal" | "bold" | "glass" | "modern" | "grid";
 
 interface ProoflyEmbedProps {
   shareId: string;
@@ -23,105 +35,10 @@ interface ProoflyEmbedProps {
   variant?: ProoflyVariant;
 }
 
-const StarRating: React.FC<{ rating: number }> = ({ rating }) => (
-  <div className="flex space-x-1">
-    {Array.from({ length: 5 }).map((_, i) => (
-      <Star
-        key={i}
-        className={`w-4 h-4 ${
-          i < rating ? "text-yellow-400 fill-current" : "text-gray-300"
-        }`}
-      />
-    ))}
-  </div>
-);
-
-const MinimalElegantCard: React.FC<{
-  name: string;
-  role: string;
-  company: string;
-  content: string;
-  rating?: number;
-}> = ({ name, role, company, content, rating = 5 }) => (
-  <div className="group relative bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:border-blue-200">
-    <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-blue-500 to-purple-600 rounded-l-3xl" />
-
-    <div className="pl-4">
-      <Quote className="w-10 h-10 text-blue-500 mb-4 opacity-50" />
-
-      <p className="text-gray-700 text-base leading-relaxed mb-6 italic">
-        {content}
-      </p>
-
-      <div className="mb-6">
-        <StarRating rating={rating} />
-      </div>
-
-      <div className="flex items-center space-x-3 pt-4 border-t border-gray-100">
-        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold">
-          {name.charAt(0).toUpperCase()}
-        </div>
-        <div>
-          <h4 className="text-gray-900 font-semibold">{name}</h4>
-          <p className="text-gray-500 text-sm">
-            {role} at {company}
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-);
-
-const BoldGradientCard: React.FC<{
-  name: string;
-  role: string;
-  company: string;
-  content: string;
-  rating?: number;
-}> = ({ name, role, company, content, rating = 5 }) => {
-  const [isHovered, setIsHovered] = useState(false);
-
-  return (
-    <div
-      className="relative bg-gradient-to-br from-blue-600 via-purple-600 to-pink-500 rounded-2xl p-[2px] shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      <div className="bg-white rounded-2xl p-8 h-full">
-        <div className="flex items-center justify-between mb-6">
-          <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-            <MessageSquare className="w-6 h-6 text-white" />
-          </div>
-          <StarRating rating={rating} />
-        </div>
-
-        <p className="text-gray-700 text-lg leading-relaxed mb-6 font-medium">
-          {content}
-        </p>
-
-        <div className="flex items-center space-x-4">
-          <div
-            className={`w-16 h-16 rounded-full border-4 border-white shadow-lg flex items-center justify-center text-lg font-semibold bg-gradient-to-br from-blue-500 to-purple-600 text-white transition-all duration-300 ${
-              isHovered ? "scale-110" : ""
-            }`}
-          >
-            {name.charAt(0).toUpperCase()}
-          </div>
-          <div>
-            <h4 className="text-gray-900 font-bold text-lg">{name}</h4>
-            <p className="text-purple-600 font-semibold text-sm">{role}</p>
-            <p className="text-gray-500 text-sm">{company}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 export const ProoflyEmbed: React.FC<ProoflyEmbedProps> = ({
   shareId,
   backendUrl = "http://localhost:3000",
-  variant = "minimal",
+  variant = "grid",
 }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -167,30 +84,145 @@ export const ProoflyEmbed: React.FC<ProoflyEmbedProps> = ({
     );
   }
 
-  const testimonials = space.testimonials || [];
-  const latest = testimonials[testimonials.length - 1];
+  const testimonials: SpaceTestimonial[] = space.testimonials || [];
 
-  if (!latest) {
+  if (testimonials.length === 0) {
     return (
       <div className="p-4 text-sm text-gray-500 bg-gray-50 rounded-lg">
         No testimonials yet for this space.
       </div>
     );
   }
+  const latest = testimonials[testimonials.length - 1];
 
-  const commonProps = {
-    name: latest.name,
-    role: latest.role,
-    company: space.companyName,
-    content: space.description || "Great experience with this product!",
+  const makeBase = (t: SpaceTestimonial, index: number) => ({
+    id: index,
+    name: t.name,
+    role: t.role,
+    company: t.company || space.companyName,
+    avatar:
+      t.photoUrl ||
+      "https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=150&h=150&fit=crop&crop=face",
     rating: 5,
-  };
+    content: t.text || space.description || "Great experience with this product!",
+  });
 
-  if (variant === "bold") {
-    return <BoldGradientCard {...commonProps} />;
+  // Single-variant modes use only the latest testimonial
+  if (variant === "minimal") {
+    const testimonial: TextTestimonial = { ...makeBase(latest, 0), type: "text" };
+    return <MinimalElegantCard testimonial={testimonial} />;
   }
 
-  return <MinimalElegantCard {...commonProps} />;
+  if (variant === "bold") {
+    const testimonial: TextTestimonial = { ...makeBase(latest, 0), type: "text" };
+    return <BoldGradientCard testimonial={testimonial} />;
+  }
+
+  if (variant === "glass") {
+    const playbackId = latest.muxPlaybackId;
+    const testimonial: VideoTestimonial = {
+      ...makeBase(latest, 0),
+      type: "video",
+      videoUrl: playbackId
+        ? `https://stream.mux.com/${playbackId}.m3u8`
+        : "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+      videoThumbnail:
+        "https://images.unsplash.com/photo-1551434678-e076c223a692?w=600&h=400&fit=crop&crop=face",
+    };
+    return <GlassMorphismVideoCard testimonial={testimonial} />;
+  }
+
+  if (variant === "modern") {
+    const playbackId = latest.muxPlaybackId;
+    const testimonial: VideoTestimonial = {
+      ...makeBase(latest, 0),
+      type: "video",
+      videoUrl: playbackId
+        ? `https://stream.mux.com/${playbackId}.m3u8`
+        : "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+      videoThumbnail:
+        "https://images.unsplash.com/photo-1518932945647-7a1c969f8be2?w=600&h=400&fit=crop&crop=face",
+    };
+    return <ModernDarkVideoCard testimonial={testimonial} />;
+  }
+
+  // grid variant: show up to four latest testimonials with all four designs
+  const latestFour = testimonials.slice(-4);
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {latestFour.map((t, index) => {
+        const base = {
+          ...makeBase(t, index),
+          avatar:
+            t.photoUrl ||
+            (index === 0
+              ? "https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=150&h=150&fit=crop&crop=face"
+              : index === 1
+              ? "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face"
+              : index === 2
+              ? "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
+              : "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face"),
+        };
+
+        if (index === 0) {
+          const testimonial: TextTestimonial = { ...base, type: "text" };
+          return (
+            <MinimalElegantCard
+              key={t.created + "minimal"}
+              testimonial={testimonial}
+            />
+          );
+        }
+
+        if (index === 1) {
+          const testimonial: TextTestimonial = { ...base, type: "text" };
+          return (
+            <BoldGradientCard
+              key={t.created + "bold"}
+              testimonial={testimonial}
+            />
+          );
+        }
+
+        if (index === 2) {
+          const playbackId = t.muxPlaybackId;
+          const testimonial: VideoTestimonial = {
+            ...base,
+            type: "video",
+            videoUrl: playbackId
+              ? `https://stream.mux.com/${playbackId}.m3u8`
+              : "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+            videoThumbnail:
+              "https://images.unsplash.com/photo-1551434678-e076c223a692?w=600&h=400&fit=crop&crop=face",
+          };
+          return (
+            <GlassMorphismVideoCard
+              key={t.created + "glass"}
+              testimonial={testimonial}
+            />
+          );
+        }
+
+        const playbackId = t.muxPlaybackId;
+        const testimonial: VideoTestimonial = {
+          ...base,
+          type: "video",
+          videoUrl: playbackId
+            ? `https://stream.mux.com/${playbackId}.m3u8`
+            : "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+          videoThumbnail:
+            "https://images.unsplash.com/photo-1518932945647-7a1c969f8be2?w=600&h=400&fit=crop&crop=face",
+        };
+        return (
+          <ModernDarkVideoCard
+            key={t.created + "modern"}
+            testimonial={testimonial}
+          />
+        );
+      })}
+    </div>
+  );
 };
 
 export default ProoflyEmbed;

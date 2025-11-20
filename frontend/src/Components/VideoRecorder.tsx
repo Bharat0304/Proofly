@@ -1,11 +1,12 @@
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import Webcam from "react-webcam";
 
 interface VideoRecordProps {
   onUploadComplete?: () => void;
+  shareId: string;
 }
 
-export function VideoRecord({ onUploadComplete }: VideoRecordProps) {
+export function VideoRecord({ onUploadComplete, shareId }: VideoRecordProps) {
   const webcamRef = useRef<Webcam>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const [capturing, setCapturing] = useState(false);
@@ -45,7 +46,7 @@ export function VideoRecord({ onUploadComplete }: VideoRecordProps) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({}),
+        body: JSON.stringify({ shareId }),
       });
 
       const data = await res.json();

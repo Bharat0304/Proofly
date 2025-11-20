@@ -16,7 +16,9 @@ export function Dashboard() {
   const [creating, setCreating] = useState(false);
   const [spaces, setSpaces] = useState<SpaceItem[]>([]);
   const [embedForId, setEmbedForId] = useState<string | null>(null);
-  const [variantBySpace, setVariantBySpace] = useState<Record<string, "minimal" | "bold">>({});
+  const [variantBySpace, setVariantBySpace] = useState<
+    Record<string, "minimal" | "bold" | "glass" | "modern" | "grid">
+  >({});
 
   useEffect(() => {
     const loadSpaces = async () => {
@@ -218,7 +220,7 @@ export function Dashboard() {
       <div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {spaces.map((space) => {
-            const variant = variantBySpace[space.id] ?? "minimal";
+            const variant = variantBySpace[space.id] ?? "grid";
             const iframeSnippet = `<iframe src="${space.shareUrl}" width="640" height="360" frameborder="0"></iframe>`;
             const reactSnippet = `import { ProoflyEmbed } from "./ProoflyEmbed";
 
@@ -280,6 +282,39 @@ export function TestimonialSection() {
                             }
                           >
                             Bold
+                          </button>
+                          <button
+                            type="button"
+                            className={`px-2 py-1 rounded border ${
+                              variant === "glass" ? "border-indigo-400 bg-indigo-500/20" : "border-gray-600"
+                            }`}
+                            onClick={() =>
+                              setVariantBySpace((prev) => ({ ...prev, [space.id]: "glass" }))
+                            }
+                          >
+                            Glass (video)
+                          </button>
+                          <button
+                            type="button"
+                            className={`px-2 py-1 rounded border ${
+                              variant === "modern" ? "border-indigo-400 bg-indigo-500/20" : "border-gray-600"
+                            }`}
+                            onClick={() =>
+                              setVariantBySpace((prev) => ({ ...prev, [space.id]: "modern" }))
+                            }
+                          >
+                            Modern (video)
+                          </button>
+                          <button
+                            type="button"
+                            className={`px-2 py-1 rounded border ${
+                              variant === "grid" ? "border-indigo-400 bg-indigo-500/20" : "border-gray-600"
+                            }`}
+                            onClick={() =>
+                              setVariantBySpace((prev) => ({ ...prev, [space.id]: "grid" }))
+                            }
+                          >
+                            Grid (4 cards)
                           </button>
                         </div>
                         <p className="text-gray-400 text-xs">Iframe snippet:</p>

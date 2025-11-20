@@ -26,6 +26,11 @@ export default function Signup() {
 
       const data = await res.json();
 
+      if (res.status === 404) {
+        alert("User already present");
+        return;
+      }
+
       if (!res.ok) {
         alert(data?.msg || "Signup failed");
         return;

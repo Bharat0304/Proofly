@@ -3,7 +3,7 @@ import { Play, Star, Quote, Video, MessageSquare } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 // Types
-interface BaseTestimonial {
+export interface BaseTestimonial {
   id: number;
   name: string;
   role: string;
@@ -13,20 +13,20 @@ interface BaseTestimonial {
   content: string;
 }
 
-interface VideoTestimonial extends BaseTestimonial {
+export interface VideoTestimonial extends BaseTestimonial {
   type: 'video';
   videoUrl: string;
   videoThumbnail: string;
 }
 
-interface TextTestimonial extends BaseTestimonial {
+export interface TextTestimonial extends BaseTestimonial {
   type: 'text';
 }
 
-type Testimonial = VideoTestimonial | TextTestimonial;
+// // export type Testimonial = VideoTestimonial | TextTestimonial;
 
 // Shared Components
-const StarRating: React.FC<{ rating: number }> = ({ rating }) => {
+export const StarRating: React.FC<{ rating: number }> = ({ rating }) => {
   return (
     <div className="flex space-x-1">
       {[...Array(5)].map((_, i) => (
@@ -42,7 +42,7 @@ const StarRating: React.FC<{ rating: number }> = ({ rating }) => {
 };
 
 // Card Component 1: Minimal Elegant Card
-const MinimalElegantCard: React.FC<{ testimonial: TextTestimonial }> = ({ testimonial }) => {
+export const MinimalElegantCard: React.FC<{ testimonial: TextTestimonial }> = ({ testimonial }) => {
   return (
     <div className="group relative bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:border-blue-200">
       {/* Gradient accent line */}
@@ -82,7 +82,7 @@ const MinimalElegantCard: React.FC<{ testimonial: TextTestimonial }> = ({ testim
 };
 
 // Card Component 2: Bold Gradient Card
-const BoldGradientCard: React.FC<{ testimonial: TextTestimonial }> = ({ testimonial }) => {
+export const BoldGradientCard: React.FC<{ testimonial: TextTestimonial }> = ({ testimonial }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -130,7 +130,7 @@ const BoldGradientCard: React.FC<{ testimonial: TextTestimonial }> = ({ testimon
 };
 
 // Card Component 3: Glass Morphism Video Card
-const GlassMorphismVideoCard: React.FC<{ testimonial: VideoTestimonial }> = ({ testimonial }) => {
+export const GlassMorphismVideoCard: React.FC<{ testimonial: VideoTestimonial }> = ({ testimonial }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
 
@@ -205,7 +205,7 @@ const GlassMorphismVideoCard: React.FC<{ testimonial: VideoTestimonial }> = ({ t
 };
 
 // Card Component 4: Modern Dark Video Card
-const ModernDarkVideoCard: React.FC<{ testimonial: VideoTestimonial }> = ({ testimonial }) => {
+export const ModernDarkVideoCard: React.FC<{ testimonial: VideoTestimonial }> = ({ testimonial }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
 
