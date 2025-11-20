@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+
 interface SpaceItem {
   id: string;
   name: string;
@@ -26,7 +28,7 @@ export function Dashboard() {
       if (!token) return;
 
       try {
-        const res = await fetch("http://localhost:3000/spaces", {
+        const res = await fetch(`${BACKEND_URL}/spaces`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -38,7 +40,7 @@ export function Dashboard() {
         const mapped: SpaceItem[] = (data.spaces || []).map((s: any) => ({
           id: s._id,
           name: s.name,
-          shareUrl: `http://localhost:5173/space/${s.shareId}`,
+          shareUrl: `${window.location.origin}/space/${s.shareId}`,
           shareId: s.shareId,
           testimonialsCount: (s.testimonials || []).length,
         }));
@@ -228,7 +230,7 @@ export function TestimonialSection() {
   return (
     <ProoflyEmbed
       shareId="${space.shareId}"
-      backendUrl="http://localhost:3000"
+      backendUrl="${BACKEND_URL}"
       variant="${variant}"
     />
   );

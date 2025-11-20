@@ -29,6 +29,8 @@ interface SpaceResponse {
 
 type ProoflyVariant = "minimal" | "bold" | "glass" | "modern" | "grid";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+
 interface ProoflyEmbedProps {
   shareId: string;
   backendUrl?: string; // e.g. "http://localhost:3000" or your deployed API
@@ -37,7 +39,7 @@ interface ProoflyEmbedProps {
 
 export const ProoflyEmbed: React.FC<ProoflyEmbedProps> = ({
   shareId,
-  backendUrl = "http://localhost:3000",
+  backendUrl = BACKEND_URL,
   variant = "grid",
 }) => {
   const [loading, setLoading] = useState(true);

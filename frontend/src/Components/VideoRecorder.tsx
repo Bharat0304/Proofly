@@ -1,6 +1,8 @@
 import { useRef, useState } from "react";
 import Webcam from "react-webcam";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+
 interface VideoRecordProps {
   onUploadComplete?: () => void;
   shareId: string;
@@ -41,7 +43,7 @@ export function VideoRecord({ onUploadComplete, shareId }: VideoRecordProps) {
     setUploading(true);
     try {
       // 1. Ask backend to create a Mux direct upload URL
-      const res = await fetch("http://localhost:3000/api/upload", {
+      const res = await fetch(`${BACKEND_URL}/api/upload`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

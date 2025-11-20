@@ -3,6 +3,8 @@ import { useParams } from "react-router-dom";
 import VideoRecord from "./VideoRecorder";
 import { TestimonialInfo } from "./testimonialinfo";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+
 interface SpaceResponse {
   space: {
     name: string;
@@ -32,7 +34,7 @@ export function PublicSpacePage() {
       }
 
       try {
-        const res = await fetch(`http://localhost:3000/space/${shareId}`);
+        const res = await fetch(`${BACKEND_URL}/space/${shareId}`);
         const data = await res.json();
 
         if (!res.ok) {
@@ -101,7 +103,7 @@ export function PublicSpacePage() {
               if (!shareId) return;
 
               try {
-                const res = await fetch(`http://localhost:3000/space/${shareId}/testimonials`, {
+                const res = await fetch(`${BACKEND_URL}/space/${shareId}/testimonials`, {
                   method: "POST",
                   headers: {
                     "Content-Type": "application/json",
