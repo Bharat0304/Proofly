@@ -1,6 +1,8 @@
 import { type FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+
 export function Signin() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -12,7 +14,7 @@ export function Signin() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:3000/signin", {
+      const res = await fetch(`${BACKEND_URL}/signin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
