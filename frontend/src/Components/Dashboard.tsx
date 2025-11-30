@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+// Backend API base URL – should point to Express server `/api`
+const BACKEND_URL =
+  import.meta.env.VITE_BACKEND_URL || "https://proofly-backend.onrender.com/api";
 
 interface SpaceItem {
   id: string;
@@ -42,10 +44,10 @@ export function Dashboard() {
       if (!token) return;
 
       try {
-        console.log('Fetching spaces from:', `${BACKEND_URL}/spaces`);
+        console.log('Fetching spaces from:', `${BACKEND_URL}/workspaces`);
         console.log('Using token:', token);
         
-        const res = await fetch(`${BACKEND_URL}/spaces`, {
+        const res = await fetch(`${BACKEND_URL}/workspaces`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -97,7 +99,7 @@ export function Dashboard() {
 
     setCreating(true);
     try {
-      const res = await fetch(`${BACKEND_URL}/spaces`, {
+      const res = await fetch(`${BACKEND_URL}/workspaces`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -110,17 +112,16 @@ export function Dashboard() {
         }),
       });
 
-      const data = await res.json();
-
       if (res.status === 401) {
         localStorage.removeItem('token');
         navigate('/signin');
         return;
       }
 
+      const data = await res.json();
+
       if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        alert(errorData?.msg || "Failed to create space");
+        alert((data as any)?.msg || "Failed to create space");
         return;
       }
 
@@ -264,7 +265,8 @@ export function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {spaces.map((space) => {
             const variant = variantBySpace[space.id] ?? "grid";
-            const iframeSnippet = `<iframe src="${space.shareUrl}" width="640" height="360" frameborder="0"></iframe>`;
+            const embedUrl = `${window.location.origin}/embed/${space.shareId}?variant=${variant}`;
+            const iframeSnippet = `<iframe\n  src="${embedUrl}"\n  width="640"\n  height="360"\n  frameborder="0"\n  style="border:0; width:100%; max-width:640px; border-radius:16px; overflow:hidden;"\n  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"\n  allowfullscreen\n></iframe>`;
             const reactSnippet = `import { ProoflyEmbed } from "./ProoflyEmbed";
 
 export function TestimonialSection() {

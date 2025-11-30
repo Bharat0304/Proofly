@@ -12,6 +12,7 @@ import VideoRecord from "./Components/VideoRecorder";
 import { RequireAuth } from "./Components/RequireAuth";
 import PublicSpacePage from "./Components/PublicSpacePage";
 import { TestimonialSection } from "./Components/testing";
+import EmbedPage from "./Components/EmbedPage";
 function Home(){
   return (
     <BrowserRouter>
@@ -35,7 +36,8 @@ function Home(){
       <Route path="snippet4" element={<CodePrevModern/>}></Route>
       <Route path="/space/:shareId" element={<PublicSpacePage/>}></Route>
       <Route path="/video" element={<VideoRecord shareId="" />} ></Route>
-     <Route path="/test" element={<TestimonialSection/>}></Route><Route/>
+     <Route path="/test" element={<TestimonialSection/>}></Route>
+     <Route path="/embed/:shareId" element={<EmbedPage />} />
       </Routes>
       
 

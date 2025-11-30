@@ -3,7 +3,9 @@ import { useParams } from "react-router-dom";
 import VideoRecord from "./VideoRecorder";
 import { TestimonialInfo } from "./testimonialinfo";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+// Backend API base URL – should include `/api`
+const BACKEND_URL =
+  import.meta.env.VITE_BACKEND_URL || "https://proofly-backend.onrender.com/api";
 
 interface SpaceResponse {
   space: {
@@ -99,7 +101,7 @@ export function PublicSpacePage() {
         <section>
           <VideoRecord
             shareId={shareId || ""}
-            onUploadComplete={async () => {
+            onUploadComplete={async (muxPlaybackId) => {
               if (!shareId) return;
 
               try {
@@ -108,7 +110,7 @@ export function PublicSpacePage() {
                   headers: {
                     "Content-Type": "application/json",
                   },
-                  body: JSON.stringify({ name, role, company, photoUrl, text }),
+                  body: JSON.stringify({ name, role, company, photoUrl, text, muxPlaybackId }),
                 });
 
                 if (!res.ok) {

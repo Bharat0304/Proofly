@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Play, Star, Quote, Video, MessageSquare } from 'lucide-react';
-import { Link } from 'react-router-dom';
 
 // Types
 export interface BaseTestimonial {
@@ -43,7 +42,6 @@ export const MinimalElegantCard: React.FC<{ testimonial: TextTestimonial }> = ({
   return (
     <div className="group relative bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:border-blue-200">
       {/* Gradient accent line */}
-      <Link to="/snippet" >
       <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-blue-500 to-purple-600 rounded-l-3xl" />
       
       <div className="pl-4">
@@ -73,7 +71,6 @@ export const MinimalElegantCard: React.FC<{ testimonial: TextTestimonial }> = ({
           </div>
         </div>
       </div>
-      </Link>
     </div>
   );
 };
@@ -83,14 +80,11 @@ export const BoldGradientCard: React.FC<{ testimonial: TextTestimonial }> = ({ t
   const [isHovered, setIsHovered] = useState(false);
 
   return (
-    
-    <div 
-    
+    <div
       className="relative bg-gradient-to-br from-blue-600 via-purple-600 to-pink-500 rounded-2xl p-[2px] shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <Link to="/snippet2" >
       <div className="bg-white rounded-2xl p-8 h-full">
         {/* Header with icon */}
         <div className="flex items-center justify-between mb-6">
@@ -121,7 +115,6 @@ export const BoldGradientCard: React.FC<{ testimonial: TextTestimonial }> = ({ t
           </div>
         </div>
       </div>
-      </Link>
     </div>
   );
 };
@@ -141,7 +134,6 @@ export const GlassMorphismVideoCard: React.FC<{ testimonial: VideoTestimonial }>
   return (
     <div className="group relative bg-white/10 backdrop-blur-xl rounded-3xl overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-500 border border-white/20">
       {/* Video Section */}
-      <Link to="/snippet3" >
       <div className="relative h-64 overflow-hidden">
         {!isVideoLoaded ? (
           <div 
@@ -196,7 +188,6 @@ export const GlassMorphismVideoCard: React.FC<{ testimonial: VideoTestimonial }>
           </div>
         </div>
       </div>
-      </Link>
     </div>
   );
 };
@@ -216,7 +207,6 @@ export const ModernDarkVideoCard: React.FC<{ testimonial: VideoTestimonial }> = 
   return (
     <div className="group relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:scale-[1.02]">
       {/* Animated border effect */}
-      <Link to="/snippet4" >
       <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl" />
       
       <div className="relative bg-slate-900 rounded-2xl m-[1px]">
@@ -281,10 +271,10 @@ export const ModernDarkVideoCard: React.FC<{ testimonial: VideoTestimonial }> = 
           </div>
         </div>
       </div>
-      </Link>
     </div>
   );
-};
+}
+;
 
 // Main App Component
 const TestimonialShowcase: React.FC = () => {

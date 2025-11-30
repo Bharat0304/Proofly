@@ -1,7 +1,9 @@
 import { type FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+// Backend API base URL – should point to Express server `/api`
+const BACKEND_URL =
+  import.meta.env.VITE_BACKEND_URL || "https://proofly-backend.onrender.com/api";
 
 export function Signin() {
   const [username, setUsername] = useState("");
@@ -17,8 +19,8 @@ export function Signin() {
     console.log('Signin attempt with username:', username);
 
     try {
-      console.log('Sending signin request to:', `${BACKEND_URL}/signin`);
-      const res = await fetch(`${BACKEND_URL}/signin`, {
+      console.log('Sending signin request to:', `${BACKEND_URL}/auth/signin`);
+      const res = await fetch(`${BACKEND_URL}/auth/signin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

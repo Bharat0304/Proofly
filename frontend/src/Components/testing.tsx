@@ -1,6 +1,8 @@
 import { ProoflyEmbed } from "./ProoflyEmbed";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+// Backend API base URL – should include `/api`
+const BACKEND_URL =
+  import.meta.env.VITE_BACKEND_URL || "https://proofly-backend.onrender.com/api";
 
 export function TestimonialSection() {
   return (
