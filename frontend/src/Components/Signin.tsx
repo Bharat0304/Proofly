@@ -110,6 +110,9 @@ export function Signin() {
             {loading ? "Signing in..." : "Sign In"}
           </button>
         </form>
+        {error && (
+          <p className="mt-3 text-sm text-red-600 text-center">{error}</p>
+        )}
         <p className="mt-4 text-sm text-center text-gray-600">
           Don't have an account?{" "}
           <a href="/signup" className="text-blue-600 hover:underline">
